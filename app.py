@@ -82,13 +82,31 @@ for idx, row in merged.iterrows():
         tooltip=tooltip
     ).add_to(marker_cluster)
 
+# Feature to add route between provinces
+st.subheader("Buat Jalur Antar Provinsi Berdasarkan Pembelian dan Penjualan Terbesar")
+
+# Dropdown selection for route
+start_province = st.selectbox("Pilih Provinsi Asal (Pembelian Terbesar):", merged['Provinsi'].unique())
+end_province = st.selectbox("Pilih Provinsi Tujuan (Penjualan Terbesar):", merged['Provinsi'].unique())
+
+# Add route if both provinces are selected
+if st.button("Tampilkan Jalur"):
+    start_location = merged[merged['Provinsi'] == start_province]
+    end_location = merged[merged['Provinsi'] == end_province]
+    
+    if not start_location.empty and not end_location.empty:
+        start_coords = [start_location['geometry'].centroid.y.values[0], start_location['geometry'].centroid.x.values[0]]
+        end_coords = [end_location['geometry'].centroid.y.values[0], end_location['geometry'].centroid.x.values[0]]
+        
+        # Draw line on map
+        folium.PolyLine(
+            locations=[start_coords, end_coords],
+            color="blue",
+            weight=5,
+            opacity=0.7,
+            tooltip=f"Jalur dari {start_province} ke {end_province}"
+        ).add_to(m)
+
 # Render Map in Streamlit
 st.subheader("Peta Provinsi dan Perdagangan")
 st_data = st_folium(m, width=700, height=500)
-
-# Optional: Route Mapping Simulation (requires API for real routing)
-st.subheader("Simulasi Rute Antar Provinsi (opsional)")
-start_province = st.selectbox("Pilih Provinsi Awal:", data['Provinsi'].unique())
-end_province = st.selectbox("Pilih Provinsi Akhir:", data['Provinsi'].unique())
-
-st.write("Silakan masukkan API tambahan untuk rute antar lokasi (opsional).")
