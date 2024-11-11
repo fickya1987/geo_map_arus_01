@@ -82,31 +82,38 @@ for idx, row in merged.iterrows():
         tooltip=tooltip
     ).add_to(marker_cluster)
 
-# Feature to add route between provinces
-st.subheader("Buat Jalur Antar Provinsi Berdasarkan Pembelian dan Penjualan Terbesar")
-
-# Dropdown selection for route
-start_province = st.selectbox("Pilih Provinsi Asal (Pembelian Terbesar):", merged['Provinsi'].unique())
-end_province = st.selectbox("Pilih Provinsi Tujuan (Penjualan Terbesar):", merged['Provinsi'].unique())
-
-# Add route if both provinces are selected
-if st.button("Tampilkan Jalur"):
-    start_location = merged[merged['Provinsi'] == start_province]
-    end_location = merged[merged['Provinsi'] == end_province]
+# Add route lines for each province's Pembelian Terbesar and Penjualan Terbesar
+for idx, row in merged.iterrows():
+    start_coords = [row['geometry'].centroid.y, row['geometry'].centroid.x]
     
-    if not start_location.empty and not end_location.empty:
-        start_coords = [start_location['geometry'].centroid.y.values[0], start_location['geometry'].centroid.x.values[0]]
-        end_coords = [end_location['geometry'].centroid.y.values[0], end_location['geometry'].centroid.x.values[0]]
+    # Route to "Pembelian Terbesar" province
+    pembelian_provinsi = row.get('Pembelian Terbesar')
+    if pembelian_provinsi and pembelian_provinsi in merged['Provinsi'].values:
+        pembelian_target = merged[merged['Provinsi'] == pembelian_provinsi]
+        pembelian_coords = [pembelian_target['geometry'].centroid.y.values[0], pembelian_target['geometry'].centroid.x.values[0]]
         
-        # Draw line on map
         folium.PolyLine(
-            locations=[start_coords, end_coords],
-            color="blue",
-            weight=5,
+            locations=[start_coords, pembelian_coords],
+            color="green",
+            weight=3,
             opacity=0.7,
-            tooltip=f"Jalur dari {start_province} ke {end_province}"
+            tooltip=f"Jalur Pembelian: {row['Provinsi']} ke {pembelian_provinsi}"
+        ).add_to(m)
+
+    # Route to "Penjualan Terbesar" province
+    penjualan_provinsi = row.get('Penjualan Terbesar')
+    if penjualan_provinsi and penjualan_provinsi in merged['Provinsi'].values:
+        penjualan_target = merged[merged['Provinsi'] == penjualan_provinsi]
+        penjualan_coords = [penjualan_target['geometry'].centroid.y.values[0], penjualan_target['geometry'].centroid.x.values[0]]
+        
+        folium.PolyLine(
+            locations=[start_coords, penjualan_coords],
+            color="blue",
+            weight=3,
+            opacity=0.7,
+            tooltip=f"Jalur Penjualan: {row['Provinsi']} ke {penjualan_provinsi}"
         ).add_to(m)
 
 # Render Map in Streamlit
-st.subheader("Peta Provinsi dan Perdagangan")
+st.subheader("Peta Provinsi dan Perdagangan dengan Jalur Pembelian dan Penjualan")
 st_data = st_folium(m, width=700, height=500)
