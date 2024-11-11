@@ -53,8 +53,8 @@ merged = geojson_data.merge(data, on='Provinsi', how='inner')
 # Confirm merged data
 st.write("Merged data:", merged)
 
-# Map setup
-m = folium.Map(location=[-2.5, 118], zoom_start=5)
+# Map setup with restricted zoom levels
+m = folium.Map(location=[-2.5, 118], zoom_start=5, min_zoom=4, max_zoom=7)
 
 # Marker Cluster for all points
 marker_cluster = MarkerCluster().add_to(m)
