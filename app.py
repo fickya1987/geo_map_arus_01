@@ -6,6 +6,7 @@ import geopandas as gpd
 import folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
+from folium.plugins import AntPath
 
 # Load data
 @st.cache_data
@@ -88,18 +89,18 @@ st.subheader("Hubungkan Titik Antar Provinsi dengan Rute Tertentu")
 # Pilih beberapa provinsi untuk dihubungkan
 selected_provinces = st.multiselect("Pilih Provinsi yang Ingin Dihubungkan dalam Jalur:", merged['Provinsi'].unique())
 
-# Konfigurasi warna dan gaya garis rute untuk setiap jalur
+# Konfigurasi gaya rute
 route_styles = {
-    "Jakarta based route": {"color": "red", "dash_array": "5, 5"},
-    "Surabaya based route": {"color": "blue", "dash_array": "10, 10"},
-    "Makassar based route": {"color": "yellow", "dash_array": "5, 10"},
-    "Supporting Route": {"color": "black", "dash_array": "2, 5"},
+    "Style 1": {"color": "red", "dash_array": "5, 5"},
+    "Style 2": {"color": "blue", "dash_array": "10, 10"},
+    "Style 3": {"color": "yellow", "dash_array": "5, 10"},
+    "Style 4": {"color": "black", "dash_array": "2, 5"},
 }
 
 # Pilih gaya rute dari menu
 selected_route_style = st.selectbox("Pilih Gaya Rute:", list(route_styles.keys()))
 
-# Gambar garis penghubung jika ada lebih dari satu provinsi yang dipilih
+# Gambar garis penghubung melengkung jika ada lebih dari satu provinsi yang dipilih
 if len(selected_provinces) > 1:
     line_coords = []
     
@@ -110,14 +111,13 @@ if len(selected_provinces) > 1:
             coords = [provinsi_data['geometry'].centroid.y.values[0], provinsi_data['geometry'].centroid.x.values[0]]
             line_coords.append(coords)
             
-    # Gambar garis penghubung antar titik provinsi yang dipilih sesuai gaya rute
-    folium.PolyLine(
+    # Gambar garis melengkung antar titik provinsi yang dipilih sesuai gaya rute
+    AntPath(
         locations=line_coords,
         color=route_styles[selected_route_style]["color"],
         weight=3,
         opacity=0.7,
-        dash_array=route_styles[selected_route_style]["dash_array"],
-        tooltip=f"Jalur: {selected_route_style}"
+        dash_array=route_styles[selected_route_style]["dash_array"]
     ).add_to(m)
 
 # Render Map in Streamlit
