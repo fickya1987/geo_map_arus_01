@@ -16,7 +16,7 @@ def load_data():
 @st.cache_data
 def load_geojson():
     # Using a GeoJSON file of Indonesia's provinces
-    gdf = gpd.read_file("indonesia_provinces.geojson")  # Make sure you have this file or download from a reliable source
+    gdf = gpd.read_file("indonesia.geojson")  # Make sure you have this file or download from a reliable source
     return gdf
 
 # Main App
