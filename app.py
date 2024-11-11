@@ -83,10 +83,21 @@ for idx, row in merged.iterrows():
     ).add_to(marker_cluster)
 
 # Menu tambahan untuk menghubungkan provinsi yang dipilih
-st.subheader("Hubungkan Titik Antar Provinsi yang Dipilih")
+st.subheader("Hubungkan Titik Antar Provinsi dengan Rute Tertentu")
 
 # Pilih beberapa provinsi untuk dihubungkan
-selected_provinces = st.multiselect("Pilih Provinsi yang Ingin Dihubungkan:", merged['Provinsi'].unique())
+selected_provinces = st.multiselect("Pilih Provinsi yang Ingin Dihubungkan dalam Jalur:", merged['Provinsi'].unique())
+
+# Konfigurasi warna dan gaya garis rute untuk setiap jalur
+route_styles = {
+    "Jakarta based route": {"color": "red", "dash_array": "5, 5"},
+    "Surabaya based route": {"color": "blue", "dash_array": "10, 10"},
+    "Makassar based route": {"color": "yellow", "dash_array": "5, 10"},
+    "Supporting Route": {"color": "black", "dash_array": "2, 5"},
+}
+
+# Pilih gaya rute dari menu
+selected_route_style = st.selectbox("Pilih Gaya Rute:", list(route_styles.keys()))
 
 # Gambar garis penghubung jika ada lebih dari satu provinsi yang dipilih
 if len(selected_provinces) > 1:
@@ -99,15 +110,16 @@ if len(selected_provinces) > 1:
             coords = [provinsi_data['geometry'].centroid.y.values[0], provinsi_data['geometry'].centroid.x.values[0]]
             line_coords.append(coords)
             
-    # Gambar garis penghubung antar titik provinsi yang dipilih
+    # Gambar garis penghubung antar titik provinsi yang dipilih sesuai gaya rute
     folium.PolyLine(
         locations=line_coords,
-        color="red",
+        color=route_styles[selected_route_style]["color"],
         weight=3,
         opacity=0.7,
-        tooltip="Jalur antar provinsi yang dipilih"
+        dash_array=route_styles[selected_route_style]["dash_array"],
+        tooltip=f"Jalur: {selected_route_style}"
     ).add_to(m)
 
 # Render Map in Streamlit
-st.subheader("Peta Provinsi dan Perdagangan dengan Jalur Penghubung")
+st.subheader("Peta Provinsi dan Perdagangan dengan Jalur Penghubung Tertentu")
 st_data = st_folium(m, width=700, height=500)
