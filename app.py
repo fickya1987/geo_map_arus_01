@@ -62,10 +62,15 @@ for idx, row in merged.iterrows():
     # Create a custom popup with all relevant data for each province
     popup_info = f"""
     <strong>{row['Provinsi']}</strong><br>
-    Nilai Perdagangan: {row.get('Nilai Perdagangan', 'Data Tidak Tersedia')}<br>
-    Volume Perdagangan: {row.get('Volume Perdagangan', 'Data Tidak Tersedia')}<br>
-    Ekspor: {row.get('Ekspor', 'Data Tidak Tersedia')}<br>
-    Impor: {row.get('Impor', 'Data Tidak Tersedia')}
+    Mode Transportasi Laut: {row.get('Mode Transportasi Laut', 'Data Tidak Tersedia')}<br>
+    Volume Total Pembelian: {row.get('Volume Total Pembelian', 'Data Tidak Tersedia')}<br>
+    Nilai Pembelian (Triliun RP): {row.get('Nilai Pembelian (Triliun RP)', 'Data Tidak Tersedia')}<br>
+    Komoditas Pembelian: {row.get('Komoditas Pembelian', 'Data Tidak Tersedia')}<br>
+    Pembelian Terbesar: {row.get('Pembelian Terbesar', 'Data Tidak Tersedia')}<br>
+    Volume Total: {row.get('Volume Total', 'Data Tidak Tersedia')}<br>
+    Nilai Penjualan (Triliun RP): {row.get('Nilai Penjualan (Triliun RP)', 'Data Tidak Tersedia')}<br>
+    Komoditas Penjualan: {row.get('Komoditas Penjualan', 'Data Tidak Tersedia')}<br>
+    Penjualan Terbesar: {row.get('Penjualan Terbesar', 'Data Tidak Tersedia')}
     """
     
     folium.Marker(
