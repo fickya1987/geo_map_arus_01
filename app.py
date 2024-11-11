@@ -73,10 +73,13 @@ for idx, row in merged.iterrows():
     Penjualan Terbesar: {row.get('Penjualan Terbesar', 'Data Tidak Tersedia')}
     """
     
+    popup = folium.Popup(popup_info, max_width=300, min_width=200)  # Set fixed size for easier reading
+    tooltip = folium.Tooltip(row['Provinsi'], sticky=True)  # Tooltip that stays open while hovering
+    
     folium.Marker(
         location=[row['geometry'].centroid.y, row['geometry'].centroid.x],
-        popup=popup_info,
-        tooltip=row['Provinsi']
+        popup=popup,
+        tooltip=tooltip
     ).add_to(marker_cluster)
 
 # Render Map in Streamlit
