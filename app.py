@@ -59,8 +59,14 @@ m = folium.Map(location=[-2.5, 118], zoom_start=5)
 # Marker Cluster for all points
 marker_cluster = MarkerCluster().add_to(m)
 for idx, row in merged.iterrows():
-    # Update 'Nilai Perdagangan' based on actual column name in your data
-    popup_info = f"{row['Provinsi']}: {row.get('Nilai Perdagangan', 'Data Tidak Tersedia')}"
+    # Create a custom popup with all relevant data for each province
+    popup_info = f"""
+    <strong>{row['Provinsi']}</strong><br>
+    Nilai Perdagangan: {row.get('Nilai Perdagangan', 'Data Tidak Tersedia')}<br>
+    Volume Perdagangan: {row.get('Volume Perdagangan', 'Data Tidak Tersedia')}<br>
+    Ekspor: {row.get('Ekspor', 'Data Tidak Tersedia')}<br>
+    Impor: {row.get('Impor', 'Data Tidak Tersedia')}
+    """
     
     folium.Marker(
         location=[row['geometry'].centroid.y, row['geometry'].centroid.x],
