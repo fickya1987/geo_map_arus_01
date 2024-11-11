@@ -38,7 +38,7 @@ st.write(filtered_data)
 geojson_data = load_geojson()
 
 # Merge data with GeoJSON for location plotting
-merged = geojson_data.merge(data, left_on='provinsi_name', right_on='Provinsi', how='inner')
+merged = geojson_data.merge(data, left_on='provinsi', right_on='Provinsi', how='inner')
 
 # Map setup
 m = folium.Map(location=[-2.5, 118], zoom_start=5)
