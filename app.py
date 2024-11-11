@@ -15,8 +15,8 @@ def load_data():
 # Load Indonesian Provinces GeoJSON
 @st.cache_data
 def load_geojson():
-    # Using a GeoJSON file of Indonesia's provinces
-    gdf = gpd.read_file("indonesia.geojson")  # Make sure you have this file or download from a reliable source
+    # Load the uploaded GeoJSON file
+    gdf = gpd.read_file("indonesia.geojson")
     return gdf
 
 # Main App
@@ -37,8 +37,21 @@ st.write(filtered_data)
 # Load GeoJSON for provinces
 geojson_data = load_geojson()
 
-# Merge data with GeoJSON for location plotting
-merged = geojson_data.merge(data, left_on='provinsi', right_on='Provinsi', how='inner')
+# Display GeoJSON structure to understand columns
+st.write("GeoJSON Columns:", geojson_data.columns)
+
+# Adjust column names if necessary based on GeoJSON file
+geojson_data = geojson_data.rename(columns={"state": "Provinsi"})  # Change "state" to match actual column name if necessary
+
+# Standardize the 'Provinsi' column in both dataframes for consistency
+geojson_data['Provinsi'] = geojson_data['Provinsi'].str.strip().str.upper()
+data['Provinsi'] = data['Provinsi'].str.strip().str.upper()
+
+# Merge data with GeoJSON based on 'Provinsi'
+merged = geojson_data.merge(data, on='Provinsi', how='inner')
+
+# Confirm merged data
+st.write("Merged data:", merged)
 
 # Map setup
 m = folium.Map(location=[-2.5, 118], zoom_start=5)
@@ -48,7 +61,7 @@ marker_cluster = MarkerCluster().add_to(m)
 for idx, row in merged.iterrows():
     folium.Marker(
         location=[row['geometry'].centroid.y, row['geometry'].centroid.x],
-        popup=f"{row['Provinsi']}: {row['Data Perdagangan']} ",  # customize based on your data
+        popup=f"{row['Provinsi']}: {row['Data Perdagangan']}",  # customize based on your data
         tooltip=row['Provinsi']
     ).add_to(marker_cluster)
 
@@ -56,7 +69,7 @@ for idx, row in merged.iterrows():
 st.subheader("Peta Provinsi dan Perdagangan")
 st_data = st_folium(m, width=700, height=500)
 
-# Additional Feature: Route Mapping (Optional, needs API integration)
+# Optional: Route Mapping Simulation (requires API for real routing)
 st.subheader("Simulasi Rute Antar Provinsi (opsional)")
 start_province = st.selectbox("Pilih Provinsi Awal:", data['Provinsi'].unique())
 end_province = st.selectbox("Pilih Provinsi Akhir:", data['Provinsi'].unique())
